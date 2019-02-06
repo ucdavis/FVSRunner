@@ -1,0 +1,9 @@
+{
+  "name": "FVSRunner",
+  "version": "1.0.0",
+  "description": "Run FVS Simulations",
+  "main": "index.js",
+  "repository": "https://github.com/ucdavis/FVSRunner.git",
+  "author": "Scott Kirkland <srkirkland@gmail.com>",
+  "license": "MIT"
+}
