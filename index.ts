@@ -33,7 +33,7 @@ async function writeToWritable(args: string, writable: import('stream').Writable
 function onExit(childProcess: ChildProcess): Promise<void> {
   return new Promise((resolve, reject) => {
     childProcess.once('exit', (code: number, signal: string) => {
-      if (code === 0 || code === 10) { // FVSws is returning code 10?
+      if (code === 0 || code === 10 || code === 20) { // FVSws is returning code 10? 20??
         resolve(undefined);
       } else {
         reject(new Error('Exit with error code: ' + code));
