@@ -1,31 +1,54 @@
 // from http://2ality.com/2018/05/child-process-streams.html
 import { streamEnd, streamWrite } from '@rauschma/stringio';
 import { ChildProcess, spawn } from 'child_process';
+import fs from 'fs';
 
 async function main() {
   console.log('running');
 
-  const args = process.argv[2];
-  console.log(args);
-  const sink = spawn('cmd.exe', ['/c', 'FVSws.exe'],
-                     { stdio: ['pipe', process.stdout, process.stderr] }); // (A)
+  const standID = process.argv[2];
+  console.log(standID);
+
+  createKeyFile(standID);
+
+  console.log('after copy');
+
+  await updateKeyFile(standID);
+
+  const fvsSink = spawn('cmd.exe', ['/c', 'FVSws.exe'],
+                        { stdio: ['pipe', process.stdout, process.stderr] }); // (A)
   try {
-    console.log('try\n');
-    writeToWritable(args, sink.stdin); // (B)
+    writeToFVS(standID, fvsSink.stdin); // (B)
   } catch (err) {
-    console.log('catch\n');
     console.log(err);
   }
-  await onExit(sink);
+  await onExit(fvsSink);
 
   console.log('### DONE');
 }
 main();
 
-async function writeToWritable(args: string, writable: import('stream').Writable) {
-  await streamWrite(writable, `${args}.KEY\n`);
+function createKeyFile(standID: string) {
+  fs.copyFileSync('GENERIC.KEY', `${standID}.KEY`);
+}
+
+async function updateKeyFile(standID: string) {
+  await fs.readFile(`${standID}.KEY`, 'utf8', (err, data) => {
+    console.log('readfile');
+    if (err) { throw err; }
+    const result = data.replace(/%STAND_ID_TO_REPLACE%/g, standID);
+
+    fs.writeFile(`${standID}.KEY`, result, 'utf8', (error) => {
+      console.log('writefile');
+      if (error) { throw err; }
+    });
+  });
+}
+
+async function writeToFVS(standID: string, writable: import('stream').Writable) {
+  await streamWrite(writable, `${standID}.KEY\n`);
   await streamWrite(writable, `\n`);
-  await streamWrite(writable, `${args}.OUT\n`);
+  await streamWrite(writable, `${standID}.OUT\n`);
 
   await streamEnd(writable);
 }
