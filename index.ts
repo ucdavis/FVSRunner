@@ -8,6 +8,10 @@ async function main() {
 
   const standID = process.argv[2];
   console.log(standID);
+  if (!standID) {
+    console.log('You must enter a stand ID');
+    return;
+  }
 
   createKeyFile(standID);
 
