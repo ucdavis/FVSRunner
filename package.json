@@ -16,7 +16,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@rauschma/stringio": "^1.4.0"
+    "@rauschma/stringio": "^1.4.0",
+    "fs": "0.0.1-security"
   },
   "devDependencies": {
     "@types/node": "^10.12.21",
