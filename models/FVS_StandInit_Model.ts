@@ -1,6 +1,6 @@
 // tslint:disable-next-line: class-name
 export interface FVS_StandInit_Model {
-  Stand_ID: number;
+  Stand_ID: string;
   Variant: string;
   Inv_Year: number;
   Groups: string;
