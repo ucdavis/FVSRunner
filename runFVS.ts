@@ -18,8 +18,6 @@ const runFVS = async (standID: string) => {
     console.log(err);
   }
   await onExit(fvsSink);
-
-  console.log('### DONE');
 };
 
 const writeToFVS = async (

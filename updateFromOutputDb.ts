@@ -8,13 +8,8 @@ export { updateFromOutputDb };
 const updateFromOutputDb = async (standID: string, db: knex) => {
   const sqliteOutput = await getOutputFromSqlite(standID, db);
   try {
-    console.log('awaiting db....');
-    console.log('SQLITEOUTPUT: ');
-    console.log(sqliteOutput);
     await db.table('biomass_output').insert(sqliteOutput);
-    console.log('after await...');
   } catch (error) {
-    console.log('catch ERROR');
     console.log(error);
   }
 };

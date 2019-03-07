@@ -21,14 +21,12 @@ const createKeyFile = async (standID: string) => {
 
 const updateKeyFile = async (standID: string) => {
   await fs.readFile(`${standID}.KEY`, 'utf8', (err, data) => {
-    console.log('readfile');
     if (err) {
       throw err;
     }
     const result = data.replace(/%STAND_ID_TO_REPLACE%/g, standID);
 
     fs.writeFile(`${standID}.KEY`, result, 'utf8', error => {
-      console.log('writefile');
       if (error) {
         throw err;
       }
