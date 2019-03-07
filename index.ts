@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
 import knex from 'knex';
+import { biomass_output_model } from 'models/biomass_output_model';
+import { FVS_Output_Model } from 'models/FVS_Output_Model';
 import { FVS_StandInit_Model } from 'models/FVS_StandInit_Model';
 import sqlite3 from 'sqlite3';
 // import { createFiles } from './createFiles';
@@ -34,7 +36,49 @@ const main = async () => {
   await runFVS(standID);
   console.log('main after runFVS');
 
+  const sqliteOutput = await updateFromOutputDb(standID, pg);
+  try {
+    console.log('awaiting db....');
+    console.log('SQLITEOUTPUT: ');
+    console.log(sqliteOutput);
+    await pg.table('biomass_output').insert(sqliteOutput);
+    console.log('after await...');
+  } catch (error) {
+    console.log('catch ERROR');
+    console.log(error);
+  }
+
   pg.destroy();
+};
+
+const updateFromOutputDb = async (standID: string, db: knex) => {
+  return new Promise((resolve, reject) => {
+    const sqliteDb = new sqlite3.Database(`${standID}-Out.db`);
+    const sqliteOutput: biomass_output_model[] = [];
+    const out = sqliteDb.each(
+      `SELECT * FROM FVS_Summary`,
+      (err, row: FVS_Output_Model) => {
+        if (err) {
+          reject(err); // optional: you might choose to swallow errors.
+        } else {
+          console.log(row);
+          sqliteOutput.push({
+            stand_id: row.StandID,
+            year: row.Year,
+            ba: row.BA
+          }); // accumulate the data
+          console.log(sqliteOutput);
+        }
+      },
+      (err, n) => {
+        if (err) {
+          reject(err); // optional: again, you might choose to swallow this error.
+        } else {
+          resolve(sqliteOutput); // resolve the promise
+        }
+      }
+    );
+  });
 };
 
 const createKeyFile = async (standID: string) => {
