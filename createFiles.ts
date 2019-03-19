@@ -48,7 +48,7 @@ const updateInputDb = async (
   sqliteDb: sqlite3.Database
 ) => {
   const rows: FVS_StandInit_Model[] = await db
-    .table('FVS_StandInit')
+    .table('fvs_standinit_large')
     .where({ Stand_ID: standID });
 
   const sqliteQuery = `INSERT INTO FVS_StandInit VALUES (
