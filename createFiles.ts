@@ -6,13 +6,14 @@ import sqlite3 from 'sqlite3';
 
 export { createFiles };
 
-const createFiles = async (standID: string, db: knex) => {
+const createFiles = async (row: FVS_StandInit_Model, db: knex) => {
+  const standID = row.Stand_ID;
   await createKeyFile(standID);
   await updateKeyFile(standID);
   const sqliteDb = await new sqlite3.Database(`${standID}-In.db`);
   await createInputDb(sqliteDb);
-  await updateInputDb(standID, db, sqliteDb);
-  sqliteDb.close();
+  await updateInputDb(row, sqliteDb);
+  await sqliteDb.close();
 };
 
 const createKeyFile = async (standID: string) => {
@@ -43,87 +44,86 @@ const formatValue = (value: string) => {
 };
 
 const updateInputDb = async (
-  standID: string,
-  db: knex,
+  row: FVS_StandInit_Model,
   sqliteDb: sqlite3.Database
 ) => {
-  const rows: FVS_StandInit_Model[] = await db
-    .table('fvs_standinit_large')
-    .where({ Stand_ID: standID });
-
-  const sqliteQuery = `INSERT INTO FVS_StandInit VALUES (
-      ${rows[0].Stand_ID},
-      ${formatValue(rows[0].Variant)},
-      ${rows[0].Inv_Year},
-      ${formatValue(rows[0].Groups)},
-      ${formatValue(rows[0].AddFiles)},
-      ${formatValue(rows[0].FVSKeywords)},
-      ${rows[0].Latitude},
-      ${rows[0].Longitude},
-      ${formatValue(rows[0].Region)},
-      ${formatValue(rows[0].Forest)},
-      ${formatValue(rows[0].District)},
-      ${formatValue(rows[0].Compartment)},
-      ${formatValue(rows[0].Location)},
-      ${formatValue(rows[0].Ecoregion)},
-      ${formatValue(rows[0].PV_Code)},
-      ${formatValue(rows[0].PV_Ref_Code)},
-      ${formatValue(rows[0].Age)},
-      ${rows[0].Aspect},
-      ${rows[0].Slope},
-      ${formatValue(rows[0].Elevation)},
-      ${rows[0].ElevFt},
-      ${rows[0].Basal_Area_Factor},
-      ${rows[0].Inv_Plot_Size},
-      ${rows[0].Brk_DBH},
-      ${rows[0].Num_Plots},
-      ${formatValue(rows[0].NonStk_Plots)},
-      ${formatValue(rows[0].Sam_Wt)},
-      ${formatValue(rows[0].Stk_Pcnt)},
-      ${formatValue(rows[0].DG_Trans)},
-      ${formatValue(rows[0].DG_Measure)},
-      ${formatValue(rows[0].HTG_Trans)},
-      ${formatValue(rows[0].HTG_Measure)},
-      ${formatValue(rows[0].Mort_Measure)},
-      ${formatValue(rows[0].Max_BA)},
-      ${formatValue(rows[0].Max_SDI)},
-      ${formatValue(rows[0].Site_Species)},
-      ${formatValue(rows[0].Site_Index)},
-      ${formatValue(rows[0].Model_Type)},
-      ${formatValue(rows[0].Physio_Region)},
-      ${formatValue(rows[0].Forest_Type)},
-      ${formatValue(rows[0].State)},
-      ${formatValue(rows[0].County)},
-      ${formatValue(rows[0].Fuel_Model)},
-      ${formatValue(rows[0].Fuel_0_25_H)},
-      ${formatValue(rows[0].Fuel_25_1_H)},
-      ${formatValue(rows[0].Fuel_1_3_H)},
-      ${formatValue(rows[0].Fuel_3_6_H)},
-      ${formatValue(rows[0].Fuel_6_12_H)},
-      ${formatValue(rows[0].Fuel_12_20_H)},
-      ${formatValue(rows[0].Fuel_20_35_H)},
-      ${formatValue(rows[0].Fuel_35_50_H)},
-      ${formatValue(rows[0].Fuel_gt_50_H)},
-      ${formatValue(rows[0].Fuel_0_25_S)},
-      ${formatValue(rows[0].Fuel_25_1_S)},
-      ${formatValue(rows[0].Fuel_1_3_S)},
-      ${formatValue(rows[0].Fuel_3_6_S)},
-      ${formatValue(rows[0].Fuel_6_12_S)},
-      ${formatValue(rows[0].Fuel_12_20_S)},
-      ${formatValue(rows[0].Fuel_20_35_S)},
-      ${formatValue(rows[0].Fuel_35_50_S)},
-      ${formatValue(rows[0].Fuel_gt_50_S)},
-      ${formatValue(rows[0].Fuel_Litter)},
-      ${formatValue(rows[0].Fuel_Duff)},
-      ${formatValue(rows[0].Photo_Ref)},
-      ${formatValue(rows[0].Photo_code)}
-    )`;
-  await sqliteDb.run(sqliteQuery);
+  await runAsync(
+    sqliteDb,
+    `INSERT INTO FVS_StandInit VALUES (
+      ${formatValue(row.Stand_ID)},
+      ${formatValue(row.Variant)},
+      ${row.Inv_Year},
+      ${formatValue(row.Groups)},
+      ${formatValue(row.AddFiles)},
+      ${formatValue(row.FVSKeywords)},
+      ${row.Latitude},
+      ${row.Longitude},
+      ${formatValue(row.Region)},
+      ${formatValue(row.Forest)},
+      ${formatValue(row.District)},
+      ${formatValue(row.Compartment)},
+      ${formatValue(row.Location)},
+      ${formatValue(row.Ecoregion)},
+      ${formatValue(row.PV_Code)},
+      ${formatValue(row.PV_Ref_Code)},
+      ${formatValue(row.Age)},
+      ${row.Aspect},
+      ${row.Slope},
+      ${formatValue(row.Elevation)},
+      ${row.ElevFt},
+      ${row.Basal_Area_Factor},
+      ${row.Inv_Plot_Size},
+      ${row.Brk_DBH},
+      ${row.Num_Plots},
+      ${formatValue(row.NonStk_Plots)},
+      ${formatValue(row.Sam_Wt)},
+      ${formatValue(row.Stk_Pcnt)},
+      ${formatValue(row.DG_Trans)},
+      ${formatValue(row.DG_Measure)},
+      ${formatValue(row.HTG_Trans)},
+      ${formatValue(row.HTG_Measure)},
+      ${formatValue(row.Mort_Measure)},
+      ${formatValue(row.Max_BA)},
+      ${formatValue(row.Max_SDI)},
+      ${formatValue(row.Site_Species)},
+      ${formatValue(row.Site_Index)},
+      ${formatValue(row.Model_Type)},
+      ${formatValue(row.Physio_Region)},
+      ${formatValue(row.Forest_Type)},
+      ${formatValue(row.State)},
+      ${formatValue(row.County)},
+      ${formatValue(row.Fuel_Model)},
+      ${formatValue(row.Fuel_0_25_H)},
+      ${formatValue(row.Fuel_25_1_H)},
+      ${formatValue(row.Fuel_1_3_H)},
+      ${formatValue(row.Fuel_3_6_H)},
+      ${formatValue(row.Fuel_6_12_H)},
+      ${formatValue(row.Fuel_12_20_H)},
+      ${formatValue(row.Fuel_20_35_H)},
+      ${formatValue(row.Fuel_35_50_H)},
+      ${formatValue(row.Fuel_gt_50_H)},
+      ${formatValue(row.Fuel_0_25_S)},
+      ${formatValue(row.Fuel_25_1_S)},
+      ${formatValue(row.Fuel_1_3_S)},
+      ${formatValue(row.Fuel_3_6_S)},
+      ${formatValue(row.Fuel_6_12_S)},
+      ${formatValue(row.Fuel_12_20_S)},
+      ${formatValue(row.Fuel_20_35_S)},
+      ${formatValue(row.Fuel_35_50_S)},
+      ${formatValue(row.Fuel_gt_50_S)},
+      ${formatValue(row.Fuel_Litter)},
+      ${formatValue(row.Fuel_Duff)},
+      ${formatValue(row.Photo_Ref)},
+      ${formatValue(row.Photo_code)}
+    )`
+  );
 };
 
 const createInputDb = async (db: sqlite3.Database) => {
-  db.run(`CREATE TABLE FVS_StandInit (
-      Stand_ID          INT,
+  await runAsync(
+    db,
+    `CREATE TABLE FVS_StandInit (
+      Stand_ID          TEXT,
       Variant           TEXT,
       Inv_Year          INT,
       Groups            TEXT,
@@ -188,6 +188,18 @@ const createInputDb = async (db: sqlite3.Database) => {
       Fuel_Duff         TEXT,
       Photo_Ref         TEXT,
       Photo_code        TEXT
+    )`
+  );
+};
 
-    )`);
+const runAsync = (sql: sqlite3.Database, sqlQuery: string) => {
+  return new Promise((resolve, reject) => {
+    sql.run(sqlQuery, (err: any, row: any) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
 };
