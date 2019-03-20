@@ -5,10 +5,10 @@ import fs from 'fs';
 
 export { runFVS };
 
-const runFVS = async (standID: string) => {
+const runFVS = async (standID: string, variant: string) => {
   console.log('runFVS');
 
-  const fvsSink = spawn('cmd.exe', ['/c', 'FVSws.exe'], {
+  const fvsSink = spawn('cmd.exe', ['/c', `FVS${variant.toLowerCase()}.exe`], {
     stdio: ['pipe', process.stdout, process.stderr]
   }); // (A)
 
