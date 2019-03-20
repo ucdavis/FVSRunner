@@ -65,4 +65,5 @@ export interface FVS_StandInit_Model {
   Fuel_Duff: string;
   Photo_Ref: string;
   Photo_code: string;
+  FVS_Run: boolean;
 }
