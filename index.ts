@@ -21,16 +21,7 @@ const main = async () => {
     }
   });
 
-  // while (
-  //   pg
-  //     .table('FVS_StandInit_Small')
-  //     .where({ FVS_Run: false })
-  //     .select('Stand_ID')
-  //     .limit(1) !== null
-  // ) {
-
   await processRows(pg);
-  // }
 
   pg.destroy();
 };
