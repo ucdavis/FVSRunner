@@ -68,7 +68,7 @@ const processRows = async (db: knex, standNID: string) => {
 
   await createFiles(rows[0], db);
 
-  await runFVS(standID, 'ws');
+  await runFVS(standID, rows[0].variant);
 
   await updateFromOutputDb(standID, db);
 
