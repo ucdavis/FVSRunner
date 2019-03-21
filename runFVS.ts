@@ -1,7 +1,6 @@
 // from http://2ality.com/2018/05/child-process-streams.html
 import { streamEnd, streamWrite } from '@rauschma/stringio';
 import { ChildProcess, spawn } from 'child_process';
-import fs from 'fs';
 
 export { runFVS };
 
