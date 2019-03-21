@@ -12,6 +12,10 @@ const updateFromOutputDb = async (standID: string, db: knex) => {
   } catch (error) {
     console.log(error);
   }
+  await db
+    .table('fvs_standinit_large')
+    .where({ Stand_ID: standID })
+    .update('FVS_Run', true);
 };
 
 // from https://stackoverflow.com/questions/46994203/sqlite3-promise-for-asynchronous-calls

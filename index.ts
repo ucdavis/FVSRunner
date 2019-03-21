@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
+import { FVS_StandInit_Model } from 'models/FVS_StandInit_Model';
 import { createFiles } from './createFiles';
 import { deleteFiles } from './deleteFiles';
 import { runFVS } from './runFVS';
@@ -20,22 +21,36 @@ const main = async () => {
     }
   });
 
-  const standID = process.argv[2];
-  if (!standID) {
-    console.log('Error: missing standID');
+  await processRows(pg);
+
+  pg.destroy();
+};
+
+const processRows = async (db: knex) => {
+  const rows: FVS_StandInit_Model[] = await db
+  .table('FVS_StandInit_Small')
+  .where({ FVS_Run: false })
+  .distinct()
+  .limit(1);
+
+  console.log(rows[0]);
+
+  const standID = rows[0].Stand_ID;
+  const variant = rows[0].Variant;
+
+  if (!standID || !variant || !db) {
+    console.log('Error');
     return;
   }
   console.log(standID);
 
-  await createFiles(standID, pg);
+  await createFiles(rows[0], db);
 
-  await runFVS(standID);
+  await runFVS(standID, variant);
 
-  await updateFromOutputDb(standID, pg);
+  await updateFromOutputDb(standID, db);
 
   await deleteFiles(standID);
-
-  pg.destroy();
 };
 
 main();
