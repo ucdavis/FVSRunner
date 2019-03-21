@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
 import { fvs_run_model } from 'models/fvs_run_model';
-import { fvs_standinit_model } from 'models/FVS_StandInit_Model';
+import { fvs_standinit_model } from 'models/fvs_standinit_model';
 import { createFiles } from './createFiles';
 import { deleteFiles } from './deleteFiles';
 import { runFVS } from './runFVS';
@@ -29,9 +29,11 @@ const main = async () => {
 
   console.log(rowstoRun[0]);
 
-  await pg.table('fvs_run')
+  const updated: fvs_run_model[] = await pg.table('fvs_run')
     .where({ stand_id: rowstoRun[0].stand_id })
-    .update({ started: true });
+    .update({ started: true, date_started: new Date() });
+
+  console.log(updated);
 
   try {
     await processRows(pg, rowstoRun[0].stand_id);
@@ -45,7 +47,7 @@ const main = async () => {
   }
   await pg.table('fvs_run')
   .where({ stand_id: rowstoRun[0].stand_id })
-  .update({ finished: true });
+  .update({ finished: true, date_finished: new Date() });
 
   pg.destroy();
 };
