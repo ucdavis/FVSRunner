@@ -20,16 +20,24 @@ const createFiles = async (
     },
     useNullAsDefault: true
   });
-  await createInputTables(sql);
-  await sql.table('FVS_StandInit').insert(standRow);
-  await sql.table('FVS_TreeInit').insert(treeRows);
-  await sql.destroy();
+  try {
+    await createInputTables(sql);
+    await sql.table('FVS_StandInit').insert(standRow);
+    await sql.table('FVS_TreeInit').insert(treeRows);
+  }
+  catch (err) {
+    throw(err);
+  }
+  finally {
+    await sql.destroy();
+  }
 };
 
 const createInputTables = async (db: knex) => {
   const standInit: fvs_standinit_model = await db.schema.createTable(
     'FVS_StandInit',
     table => {
+      // TODO: remove stand_nid and id
       table.text('stand_nid');
       table.integer('id');
       table.text('stand_id');
