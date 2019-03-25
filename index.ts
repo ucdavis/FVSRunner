@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import knex from 'knex';
 import { fvs_run_model } from 'models/fvs_run_model';
 import { fvs_standinit_model } from 'models/fvs_standinit_model';
+import { fvs_treeinit_model } from 'models/fvs_treeinit_model';
 import { createFiles } from './createFiles';
 import { deleteFiles } from './deleteFiles';
 import { runFVS } from './runFVS';
@@ -64,19 +65,21 @@ const processRows = async (db: knex, standNID: string, jobID: string) => {
     throw new Error();
   }
 
-  const rows: fvs_standinit_model[] = await db
+  const standRows: fvs_standinit_model[] = await db
     .table('fvs_standinit')
     .where({ stand_nid: standNID });
 
-  console.log(rows);
+  const treeRows: fvs_treeinit_model[] = await db
+    .table('fvs_treeinit')
+    .where({ stand_id: standRows[0].stand_id }); // TODO: change to standNID when they match
 
-  const fileName = `${rows[0].stand_id}-${jobID}`;
+  const fileName = `${standRows[0].stand_id}-${jobID}`;
 
-  await createFiles(rows[0], fileName);
+  await createFiles(standRows[0], treeRows, fileName);
 
-  await runFVS(fileName, rows[0].variant);
+  await runFVS(fileName, standRows[0].variant);
 
-  await updateFromOutputDb(rows[0].stand_id, fileName, db);
+  await updateFromOutputDb(standRows[0].stand_id, fileName, db);
 
   // TODO: can move this into finally() of try/catch once stand_id == stand_nid
   await deleteFiles(fileName);
