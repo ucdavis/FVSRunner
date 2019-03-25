@@ -27,35 +27,41 @@ const main = async () => {
     .where({ started: false, finished: false })
     .limit(1);
 
+  if (!rowstoRun || rowstoRun.length !== 1) {
+    console.log('no rows to run found');
+    pg.destroy();
+    return;
+  }
+
   console.log(rowstoRun[0]);
 
-  const updated: fvs_run_model[] = await pg.table('fvs_run')
+  const updated: fvs_run_model[] = await pg
+    .table('fvs_run')
     .where({ stand_id: rowstoRun[0].stand_id })
     .update({ started: true, date_started: new Date() });
 
   console.log(updated);
 
   try {
-    await processRows(pg, rowstoRun[0].stand_id);
+    await processRows(pg, rowstoRun[0].stand_id, rowstoRun[0].id);
+    await pg
+      .table('fvs_run')
+      .where({ stand_id: rowstoRun[0].stand_id })
+      .update({ finished: true, date_finished: new Date() });
   } catch (err) {
     console.log(err);
-    await pg.table('fvs_run')
-    .where({ stand_id: rowstoRun[0].stand_id })
-    .update({ started: false });
+    await pg
+      .table('fvs_run')
+      .where({ stand_id: rowstoRun[0].stand_id })
+      .update({ started: false });
+  } finally {
     pg.destroy();
-    return;
   }
-  await pg.table('fvs_run')
-  .where({ stand_id: rowstoRun[0].stand_id })
-  .update({ finished: true, date_finished: new Date() });
-
-  pg.destroy();
 };
 
-const processRows = async (db: knex, standNID: string) => {
-  if (!standNID || !db) {
-    console.log('Error');
-    return;
+const processRows = async (db: knex, standNID: string, jobID: string) => {
+  if (!standNID || !jobID || !db) {
+    throw new Error();
   }
 
   const rows: fvs_standinit_model[] = await db
@@ -64,15 +70,16 @@ const processRows = async (db: knex, standNID: string) => {
 
   console.log(rows);
 
-  const standID = rows[0].stand_id;
+  const fileName = `${rows[0].stand_id}-${jobID}`;
 
-  await createFiles(rows[0], db);
+  await createFiles(rows[0], fileName);
 
-  await runFVS(standID, rows[0].variant);
+  await runFVS(fileName, rows[0].variant);
 
-  await updateFromOutputDb(standID, db);
+  await updateFromOutputDb(rows[0].stand_id, fileName, db);
 
-  await deleteFiles(standID);
+  // TODO: can move this into finally() of try/catch once stand_id == stand_nid
+  await deleteFiles(fileName);
 };
 
 main();
