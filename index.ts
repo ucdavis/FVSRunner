@@ -36,7 +36,7 @@ const main = async () => {
   console.log(updated);
 
   try {
-    await processRows(pg, rowstoRun[0].stand_id);
+    await processRows(pg, rowstoRun[0].stand_id, rowstoRun[0].id);
   } catch (err) {
     console.log(err);
     await pg.table('fvs_run')
@@ -52,8 +52,8 @@ const main = async () => {
   pg.destroy();
 };
 
-const processRows = async (db: knex, standNID: string) => {
-  if (!standNID || !db) {
+const processRows = async (db: knex, standNID: string, jobID: string) => {
+  if (!standNID || !jobID || !db) {
     console.log('Error');
     return;
   }
@@ -64,15 +64,15 @@ const processRows = async (db: knex, standNID: string) => {
 
   console.log(rows);
 
-  const standID = rows[0].stand_id;
+  const fileName = `${rows[0].stand_id}-${jobID}`;
 
-  await createFiles(rows[0], db);
+  await createFiles(rows[0], fileName);
 
-  await runFVS(standID, rows[0].variant);
+  await runFVS(fileName, rows[0].variant);
 
-  await updateFromOutputDb(standID, db);
+  await updateFromOutputDb(rows[0].stand_id, fileName, db);
 
-  await deleteFiles(standID);
+  await deleteFiles(fileName);
 };
 
 main();

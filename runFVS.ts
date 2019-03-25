@@ -4,7 +4,7 @@ import { ChildProcess, spawn } from 'child_process';
 
 export { runFVS };
 
-const runFVS = async (standID: string, variant: string) => {
+const runFVS = async (fileName: string, variant: string) => {
   console.log('runFVS');
 
   const fvsSink = spawn('cmd.exe', ['/c', `FVS${variant.toLowerCase()}.exe`], {
@@ -12,7 +12,7 @@ const runFVS = async (standID: string, variant: string) => {
   }); // (A)
 
   try {
-    await writeToFVS(standID, fvsSink.stdin); // (B)
+    await writeToFVS(fileName, fvsSink.stdin); // (B)
   } catch (err) {
     console.log(err);
   }
@@ -20,13 +20,13 @@ const runFVS = async (standID: string, variant: string) => {
 };
 
 const writeToFVS = async (
-  standID: string,
+  fileName: string,
   writable: import('stream').Writable
 ) => {
-  console.log('writeToFVS ' + standID);
-  await streamWrite(writable, `${standID}.KEY\n`);
+  console.log('writeToFVS ' + fileName);
+  await streamWrite(writable, `${fileName}.KEY\n`);
   await streamWrite(writable, `\n`);
-  await streamWrite(writable, `${standID}.OUT\n`);
+  await streamWrite(writable, `${fileName}.OUT\n`);
   await streamEnd(writable);
 };
 

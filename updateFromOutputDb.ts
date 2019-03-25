@@ -5,8 +5,8 @@ import sqlite3 from 'sqlite3';
 
 export { updateFromOutputDb };
 
-const updateFromOutputDb = async (standID: string, db: knex) => {
-  const sqliteOutput = await getOutputFromSqlite(standID, db);
+const updateFromOutputDb = async (standID: string, fileName: string, db: knex) => {
+  const sqliteOutput = await getOutputFromSqlite(fileName, db);
   try {
     await db.table('biomass_output').insert(sqliteOutput);
   } catch (error) {
@@ -19,9 +19,9 @@ const updateFromOutputDb = async (standID: string, db: knex) => {
 };
 
 // from https://stackoverflow.com/questions/46994203/sqlite3-promise-for-asynchronous-calls
-const getOutputFromSqlite = async (standID: string, db: knex) => {
+const getOutputFromSqlite = async (fileName: string, db: knex) => {
   return new Promise((resolve, reject) => {
-    const sqliteDb = new sqlite3.Database(`${standID}-Out.db`);
+    const sqliteDb = new sqlite3.Database(`${fileName}-Out.db`);
     const sqliteOutput: biomass_output_model[] = [];
     const out = sqliteDb.each(
       `SELECT * FROM FVS_Summary`,

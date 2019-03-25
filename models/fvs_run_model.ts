@@ -6,4 +6,5 @@ export interface fvs_run_model {
   finished: boolean;
   date_started?: Date;
   date_finished?: Date;
+  id: string;
 }

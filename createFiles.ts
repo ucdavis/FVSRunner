@@ -1,33 +1,36 @@
 // from http://2ality.com/2018/05/child-process-streams.html
 import fs from 'fs';
-import knex from 'knex';
-import { fvs_standinit_model } from 'models/FVS_StandInit_Model';
+import { fvs_standinit_model } from 'models/fvs_standinit_model';
 import sqlite3 from 'sqlite3';
 
 export { createFiles };
 
-const createFiles = async (row: fvs_standinit_model, db: knex) => {
-  const standID = row.stand_id;
-  await createKeyFile(standID);
-  await updateKeyFile(standID);
-  const sqliteDb = await new sqlite3.Database(`${standID}-In.db`);
+const createFiles = async (
+  row: fvs_standinit_model,
+  fileName: string
+) => {
+  await createKeyFile(fileName);
+  await updateKeyFile(fileName, row.stand_id);
+  const sqliteDb = await new sqlite3.Database(`${fileName}-In.db`);
   await createInputDb(sqliteDb);
   await updateInputDb(row, sqliteDb);
   await sqliteDb.close();
 };
 
-const createKeyFile = async (standID: string) => {
-  await fs.copyFileSync('GENERIC.KEY', `${standID}.KEY`);
+const createKeyFile = async (fileName: string) => {
+  await fs.copyFileSync('GENERIC.KEY', `${fileName}.KEY`);
 };
 
-const updateKeyFile = async (standID: string) => {
-  await fs.readFile(`${standID}.KEY`, 'utf8', (err, data) => {
+const updateKeyFile = async (fileName: string, standID: string) => {
+  await fs.readFile(`${fileName}.KEY`, 'utf8', (err, data) => {
     if (err) {
       throw err;
     }
-    const result = data.replace(/%STAND_ID_TO_REPLACE%/g, standID);
+    const result = data.replace(/%STAND_ID_TO_REPLACE%|%FILE_NAME_TO_REPLACE%/g, (matched) => {
+      return matched === '%STAND_ID_TO_REPLACE%' ? standID : fileName;
+    });
 
-    fs.writeFile(`${standID}.KEY`, result, 'utf8', error => {
+    fs.writeFile(`${fileName}.KEY`, result, 'utf8', error => {
       if (error) {
         throw err;
       }
