@@ -76,6 +76,7 @@ const processRows = async (db: knex, standNID: string, jobID: string) => {
 
   await runFVS(fileName, rows[0].variant);
 
+  // TODO: can move this into finally() of try/catch once stand_id == stand_nid
   await updateFromOutputDb(rows[0].stand_id, fileName, db);
 
 };
