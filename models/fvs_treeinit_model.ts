@@ -1,5 +1,6 @@
 // tslint:disable-next-line: class-name
 export interface fvs_treeinit_model {
+  stand_nid: string;
   stand_id: string;
   standplot_id: string;
   plot_id: string;

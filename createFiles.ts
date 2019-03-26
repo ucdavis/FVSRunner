@@ -12,7 +12,8 @@ const createFiles = async (
   fileName: string
 ) => {
   await createKeyFile(fileName);
-  await updateKeyFile(fileName, standRow.stand_id);
+  // TODO: use stand_id instead of stand_nid
+  await updateKeyFile(fileName, standRow.stand_nid);
   const sql = knex({
     client: 'sqlite3',
     connection: {
@@ -60,6 +61,7 @@ const createInputTables = async (db: knex) => {
   const treeInit: fvs_treeinit_model = await db.schema.createTable(
     'FVS_TreeInit',
     table => {
+      table.text('stand_nid');
       table.text('stand_id');
       table.text('standplot_id');
       table.text('plot_id');
