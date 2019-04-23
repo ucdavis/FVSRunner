@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 import knex from 'knex';
-import { fvs_run_model } from 'models/fvs_run_model';
-import { fvs_standinit_model } from 'models/fvs_standinit_model';
-import { fvs_treeinit_model } from 'models/fvs_treeinit_model';
 import { createFiles } from './createFiles';
 import { deleteFiles } from './deleteFiles';
+import { fvs_run_model } from './models/fvs_run_model';
+import { fvs_standinit_model } from './models/fvs_standinit_model';
+import { fvs_treeinit_model } from './models/fvs_treeinit_model';
 import { runFVS } from './runFVS';
 import { updateFromOutputDb } from './updateFromOutputDb';
 

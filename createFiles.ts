@@ -1,8 +1,8 @@
 // from http://2ality.com/2018/05/child-process-streams.html
 import fs from 'fs';
 import knex from 'knex';
-import { fvs_standinit_model } from 'models/fvs_standinit_model';
-import { fvs_treeinit_model } from 'models/fvs_treeinit_model';
+import { fvs_standinit_model } from './models/fvs_standinit_model';
+import { fvs_treeinit_model } from './models/fvs_treeinit_model';
 
 export { createFiles };
 

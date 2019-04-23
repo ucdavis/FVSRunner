@@ -1,7 +1,7 @@
 import knex from 'knex';
-import { biomass_output_model } from 'models/biomass_output_model';
-import { FVS_Output_Model } from 'models/FVS_Output_Model';
 import sqlite3 from 'sqlite3';
+import { biomass_output_model } from './models/biomass_output_model';
+import { FVS_Output_Model } from './models/FVS_Output_Model';
 
 export { updateFromOutputDb };
 
