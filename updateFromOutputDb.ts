@@ -1,7 +1,7 @@
 import knex from 'knex';
 import sqlite3 from 'sqlite3';
 import { biomass_output_model } from './models/biomass_output_model';
-import { FVS_Output_Model } from './models/FVS_Output_Model';
+import { fvs_output_model } from './models/fvs_output_model';
 
 export { updateFromOutputDb };
 
@@ -21,7 +21,7 @@ const getOutputFromSqlite = async (fileName: string, db: knex) => {
     const sqliteOutput: biomass_output_model[] = [];
     const out = sqliteDb.each(
       `SELECT * FROM FVS_Summary`,
-      (err, row: FVS_Output_Model) => {
+      (err, row: fvs_output_model) => {
         if (err) {
           reject(err);
         } else {

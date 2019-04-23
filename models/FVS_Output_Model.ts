@@ -1,5 +1,5 @@
 // tslint:disable-next-line: class-name
-export interface FVS_Output_Model {
+export interface fvs_output_model {
   CaseID: string;
   StandID: string;
   Year: number;
