@@ -7,9 +7,13 @@ export { runFVS };
 const runFVS = async (fileName: string, variant: string) => {
   console.log('runFVS');
 
-  const fvsSink = spawn('cmd.exe', ['/c', `FVS${variant.toLowerCase()}.exe`], {
-    stdio: ['pipe', process.stdout, process.stderr]
-  }); // (A)
+  // linux
+  const fvsSink = spawn(`./qFVS${variant.toLowerCase()}`);
+
+  // windows
+  // const fvsSink = spawn('cmd.exe', ['/c', `FVS${variant.toLowerCase()}.exe`], {
+  //   stdio: ['pipe', process.stdout, process.stderr]
+  // });
 
   try {
     await writeToFVS(fileName, fvsSink.stdin); // (B)
