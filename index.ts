@@ -71,15 +71,15 @@ const processRows = async (db: knex, standNID: string, jobID: string) => {
 
   const treeRows: fvs_treeinit_model[] = await db
     .table('fvs_treeinit')
-    .where({ stand_id: standRows[0].stand_id }); // TODO: change to standNID when they match
+    .where({ stand_nid: standNID }); // TODO: change to standNID when they match
 
-  const fileName = `${standRows[0].stand_id}-${jobID}`;
+  const fileName = `${standNID}-${jobID}`;
 
   await createFiles(standRows[0], treeRows, fileName);
 
   await runFVS(fileName, standRows[0].variant);
 
-  await updateFromOutputDb(standRows[0].stand_id, fileName, db);
+  await updateFromOutputDb(standNID, fileName, db);
 
   // TODO: can move this into finally() of try/catch once stand_id == stand_nid
   await deleteFiles(fileName);
